@@ -1,23 +1,21 @@
-import {View, Text, StyleSheet, TouchableOpacity, FlatList, ListRenderItem, Image} from "react-native";
-import {BarCodeScanner} from "expo-barcode-scanner";
-import {useEffect, useState} from "react";
-import {getBookByISBN} from "../api/books";
-import {addDoc, collection, onSnapshot, serverTimestamp} from "firebase/firestore";
-import {FIRESTORE_DB} from "../config/FirebaseConfig";
-import {useRouter} from "expo-router";
-import {colors} from "../colors";
-
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ListRenderItem, Image } from "react-native";
+import { BarCodeScanner } from "expo-barcode-scanner";
+import { useEffect, useState } from "react";
+import { getBookByISBN } from "../api/books";
+import { addDoc, collection, onSnapshot, serverTimestamp, deleteDoc, doc } from "firebase/firestore";
+import { FIRESTORE_DB } from "../config/FirebaseConfig";
+import { useRouter } from "expo-router";
+import { colors } from "../colors";
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function List() {
-
-  //BarCode scan handling
+  // BarCode scan handling
   const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [books, setBooks] = useState<any[]>([]);
   const router = useRouter();
-
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -45,8 +43,9 @@ export default function List() {
     const bookData = await getBookByISBN(code);
     console.log(`~ file: list.tsx:24 ~ ISBN scanned ~ data:`, bookData);
     setShowScanner(false);
-    if(!bookData.items) return;
+    if (!bookData.items) return;
     await addBook(bookData.items[0]);
+    setScanned(false);
   };
 
   const addBook = async (book: any) => {
@@ -58,43 +57,18 @@ export default function List() {
       favourite: false,
       created: serverTimestamp()
     };
-    const db = await addDoc(collection(FIRESTORE_DB, 'users', 'markus', 'books'), newBook)
+    await addDoc(collection(FIRESTORE_DB, 'users', 'markus', 'books'), newBook);
   };
 
-/*
-  const renderItem: ListRenderItem<any> = ({item}) => {
-    return (
-      <TouchableOpacity onPress={() => router.push(`/(book)/${item.id}`)}>
-        <View style={styles.bookItem}>
-          <Image source={{uri: item.volumeInfo.imageLinks.thumbnail}} style={{width: 50, height: 50}}/>
-          <View>
-            <Text>{item.volumeInfo.title}</Text>
-            <Text>{item.volumeInfo.authors[0]}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
+  const removeBook = async (bookId: string) => {
+    try {
+      await deleteDoc(doc(FIRESTORE_DB, 'users', 'markus', 'books', bookId));
+    } catch (error) {
+      console.error('Error removing book:', error);
+    }
   };
-*/
-  /*
-  const renderItem: ListRenderItem<any> = ({ item }) => {
-    return (
-        <TouchableOpacity onPress={() => router.push(`/book/${item.id}`)}>
-          <View style={styles.bookItem}>
-            <Image source={{ uri: item.volumeInfo.imageLinks.thumbnail }} style={{ width: 50, height: 50 }} />
-            <View>
-              <Text>{item.volumeInfo.title}</Text>
-              <Text>{item.volumeInfo.authors[0]}</Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-    );
-  };
-
-   */
 
   const renderItem: ListRenderItem<any> = ({ item }) => {
-
     return (
         <TouchableOpacity onPress={() => navigation.navigate('BookPage', { id: item.id })}>
           <View style={styles.bookItem}>
@@ -103,25 +77,29 @@ export default function List() {
               <Text style={styles.title}>{item.volumeInfo.title}</Text>
               <Text style={styles.author}>{item.volumeInfo.authors[0]}</Text>
             </View>
+            <View style={styles.trashContainer}>
+              <TouchableOpacity style={styles.trash} onPress={() => removeBook(item.id)}>
+                <Ionicons name={'trash-outline'} size={35} color={colors.offwhite} />
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableOpacity>
     );
   };
 
-
   return (
-    <View style={styles.container}>
-      {showScanner &&
-        <BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}/>
-      }
-      <FlatList data={books} renderItem={renderItem} keyExtractor={(item) => item.id}/>
-      {hasPermission &&
-        <TouchableOpacity style={styles.fab} onPress={() => setShowScanner(true)}>
-          <Text style={styles.fabIcon}>+</Text>
-        </TouchableOpacity>
-      }
-    </View>
+      <View style={styles.container}>
+        {showScanner &&
+            <BarCodeScanner onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                            style={styles.barCodeScanner}/>
+        }
+        <FlatList data={books} renderItem={renderItem} keyExtractor={(item) => item.id}/>
+        {hasPermission &&
+            <TouchableOpacity style={styles.fab} onPress={() => setShowScanner(true)}>
+              <Text style={styles.fabIcon}>+</Text>
+            </TouchableOpacity>
+        }
+      </View>
   );
 }
 
@@ -132,7 +110,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: colors.offwhite,
   },
-  fab:  {
+  fab: {
     position: 'absolute',
     width: 56,
     height: 56,
@@ -143,6 +121,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.salmon,
     borderRadius: 30,
     elevation: 8
+  },
+  trash: {
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.salmon,
+    borderRadius: 30,
+    elevation: 8,
+    marginLeft: 14,
   },
   fabIcon: {
     fontSize: 24,
@@ -172,4 +160,13 @@ const styles = StyleSheet.create({
     height: 75,
     marginRight: 10,
   },
+  trashContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barCodeScanner: {
+    width: '100%',
+    height: '100%',
+    elevation: 2,
+    zIndex: 2}
 });

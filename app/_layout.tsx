@@ -4,7 +4,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { colors } from '../colors';
 import { Image } from 'react-native';
 
-import LibraryScreen from "./library";
+import LibraryScreen from "./saved";
 import SearchScreen from "./search";
 import IndexScreen from "./index";
 import BookDetails from "./bookdetails";
@@ -74,7 +74,7 @@ export default function TabsLayout() {
                         iconName = 'home';
                     } else if (route.name === 'search') {
                         iconName = 'search';
-                    } else if (route.name === 'library') {
+                    } else if (route.name === 'saved') {
                         iconName = 'bookmark';
                     } else if (route.name === 'list') {
                         iconName = 'barcode';
@@ -93,6 +93,7 @@ export default function TabsLayout() {
                 headerTitleStyle: {
                     fontWeight: 'bold',
                     color: colors.offwhite,
+                    fontSize: 24,
                 },
             })}
         >
@@ -115,11 +116,11 @@ export default function TabsLayout() {
                 }}
             />
             <Tab.Screen
-                name="library"
+                name="saved"
                 component={LibraryScreen}
                 options={{
-                    title: 'Library',
-                    headerTitle: 'My Library',
+                    title: 'Saved',
+                    headerTitle: 'Saved Books',
                     headerRight: () => <InkpathLogo />,
                 }}
             />

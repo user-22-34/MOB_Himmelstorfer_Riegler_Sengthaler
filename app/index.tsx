@@ -10,12 +10,21 @@ export default function IndexScreen() {
             />
             <View style={styles.container}>
                 <Text style={styles.welcomeTitle}>Welcome to Inkpath!</Text>
-                <Text style={styles.normalText}>
-                    Find books from all over the world and track your reading!
-                    {"\n"}
-                    To find books, visit the Book Search and choose one of the many results.
-                    In your Library, you can see every book you saved.
-                </Text>
+                <View style={styles.normalTextContainer}>
+                    <Text style={styles.normalText}>
+                        Find books from all over the world!
+                    </Text>
+                    <Text style={styles.normalText}>
+                        To find books, visit the Book Search and choose one of the many results.
+                        You can save these books to your Saved Books so you know which
+                        books to look out for the next time you go book shopping!
+                    </Text>
+                    <Text style={styles.normalText}>
+                        You can also scan the IBSN of your own books with BookScan to keep
+                        an overview of which books you've already got! Just use the scanner and track
+                        your owned books - now you'll never buy the same book twice.
+                    </Text>
+                </View>
             </View>
         </View>
         /*
@@ -56,8 +65,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     normalText:{
+        padding: 2,
+        textAlign: "center",
+    },
+    normalTextContainer:{
         marginVertical: 10,
         marginHorizontal: 20,
-        textAlign: "center",
     }
 })
