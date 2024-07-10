@@ -4,17 +4,19 @@ import { FontAwesome } from '@expo/vector-icons';
 import { colors } from '../colors';
 import { Image } from 'react-native';
 
-import LibraryScreen from "./saved";
+// Importieren aller Komponenten / App-Bereiche
+import SavedScreen from "./saved";
 import SearchScreen from "./search";
 import IndexScreen from "./index";
 import BookDetails from "./bookdetails";
 import List from "./list";
 import BookPage from './(book)/[id]';
 
-
+// Navigation anlegen
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+// Logo für Header / Überschrift einbinden
 const InkpathLogo = () => (
     <Image
         source={require('../assets/images/inkpathlogocrop.png')}
@@ -27,6 +29,7 @@ const InkpathLogo = () => (
     />
 );
 
+// Navigation für Detailansicht Buchsuche -> Buchdetails
 function SearchStack() {
     return (
         <Stack.Navigator>
@@ -44,6 +47,7 @@ function SearchStack() {
     );
 }
 
+// Navigation für Detailansicht gescannte Bücherliste -> Buchdetails
 function ListStack() {
     return (
         <Stack.Navigator>
@@ -56,12 +60,12 @@ function ListStack() {
                     fontWeight: "normal",
                 },
             }}
-
             />
         </Stack.Navigator>
     );
 }
 
+// Tabnavigation / Navigation in Footer
 export default function TabsLayout() {
     return (
         <Tab.Navigator
@@ -79,7 +83,6 @@ export default function TabsLayout() {
                     } else if (route.name === 'list') {
                         iconName = 'barcode';
                     }
-
                     return <FontAwesome name={iconName} size={size} color={color} />;
                 },
                 // Farbe und Style festlegen
@@ -93,7 +96,7 @@ export default function TabsLayout() {
                 headerTitleStyle: {
                     fontWeight: 'bold',
                     color: colors.offwhite,
-                    fontSize: 24,
+                    fontSize: 26,
                 },
             })}
         >
@@ -102,7 +105,7 @@ export default function TabsLayout() {
                 component={IndexScreen}
                 options={{
                     title: 'Home',
-                    headerTitle: 'Welcome to Inkpath',
+                    headerTitle: 'Home',
                     headerRight: () => <InkpathLogo />,
                 }}
             />
@@ -117,7 +120,7 @@ export default function TabsLayout() {
             />
             <Tab.Screen
                 name="saved"
-                component={LibraryScreen}
+                component={SavedScreen}
                 options={{
                     title: 'Saved',
                     headerTitle: 'Saved Books',

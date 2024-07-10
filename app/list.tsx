@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from "@expo/vector-icons";
 
 export default function List() {
-  // BarCode scan handling
+  // Variablen/Konstanten definieren, BarCode scan handling
   const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
@@ -18,8 +18,11 @@ export default function List() {
   const router = useRouter();
   const navigation = useNavigation();
 
+  // Funktion um Datenbank (books) abzurufen
+  // (bereits eingescannte und in Datenbank gespeicherte Bücher)
   useEffect(() => {
-    const booksCollection = collection(FIRESTORE_DB, 'users', 'markus', 'books');
+    const booksCollection =
+        collection(FIRESTORE_DB, 'users', 'markus', 'books');
     onSnapshot(booksCollection, (snapshot) => {
       const books = snapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() };
@@ -28,15 +31,16 @@ export default function List() {
     });
   }, []);
 
+  // Abfrage ob Kamera-Zugriff am Handy gestattet wird
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     };
-
     getBarCodeScannerPermissions();
   }, []);
 
+  // Scannen von Barcode & Hinzufügen von eingescannten Buch in Datenbank (books)
   const handleBarCodeScanned = async ({ type, data }: { type: string, data: string }) => {
     setScanned(true);
     const code = data;
@@ -48,6 +52,7 @@ export default function List() {
     setScanned(false);
   };
 
+  // Funktion um Buch in Datenbank zu hinterlegen / hinzuzufügen
   const addBook = async (book: any) => {
     const newBook = {
       bookId: book.id,
@@ -60,6 +65,7 @@ export default function List() {
     await addDoc(collection(FIRESTORE_DB, 'users', 'markus', 'books'), newBook);
   };
 
+  // Funktion um Buch aus Datenbank zu löschen
   const removeBook = async (bookId: string) => {
     try {
       await deleteDoc(doc(FIRESTORE_DB, 'users', 'markus', 'books', bookId));
@@ -68,7 +74,10 @@ export default function List() {
     }
   };
 
+  // Visuelle Darstellugn
   const renderItem: ListRenderItem<any> = ({ item }) => {
+    // Visuelle Darstellugn der Liste an bereits eingescannten bzw.
+    // in der Datenbank (books) gespeicherten Bücher
     return (
         <TouchableOpacity onPress={() => navigation.navigate('BookPage', { id: item.id })}>
           <View style={styles.bookItem}>
@@ -86,7 +95,7 @@ export default function List() {
         </TouchableOpacity>
     );
   };
-
+  // Visuelle Darstellugn des BarCodeScanners
   return (
       <View style={styles.container}>
         {showScanner &&

@@ -5,11 +5,14 @@ import { FIRESTORE_DB } from '../config/FirebaseConfig';
 import { colors } from '../colors';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function LibraryScreen() {
+export default function SavedScreen() {
+    // Variable/Konstate definieren (Liste der gespeicherten Bücher)
     const [savedBooks, setSavedBooks] = useState([]);
 
+    // Lädt die in Datenbank (savedBooks) gespeicherten Bücher und zeigt sie an
     useEffect(() => {
-        const savedBooksCollection = collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks');
+        const savedBooksCollection =
+            collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks');
         const unsubscribe = onSnapshot(savedBooksCollection, (snapshot) => {
             const books = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
             setSavedBooks(books);
@@ -17,14 +20,17 @@ export default function LibraryScreen() {
         return () => unsubscribe();
     }, []);
 
+    // Entfernt gespeichertes Buch aus Datenbank (savedBooks)
     const removeBook = async (bookId) => {
         try {
-            await deleteDoc(doc(FIRESTORE_DB, 'users', 'markus', 'savedBooks', bookId));
+            await deleteDoc(
+                doc(FIRESTORE_DB, 'users', 'markus', 'savedBooks', bookId));
         } catch (error) {
             console.error('Error removing book: ', error);
         }
     };
 
+    // Visuelle Darstellung der gerenderten Buchliste von gespeicherten Büchern
     const renderItem = ({ item }) => (
         <View style={styles.bookItem}>
             {item.cover ? (
@@ -44,6 +50,7 @@ export default function LibraryScreen() {
         </View>
     );
 
+    // Ausgabe der visuellen Darstellung der Liste gespeicherter Bücher
     return (
         <View style={styles.screenContainer}>
             <FlatList

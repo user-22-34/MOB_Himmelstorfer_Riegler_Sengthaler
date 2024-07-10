@@ -31,14 +31,13 @@ export default function SearchScreen() {
 
     return (
         <View style={styles.container}>
-
+            {/* Suchfeld / Input */}
             <TextInput
                 style={styles.input}
                 placeholder="Search for a book title"
                 value={query}
                 onChangeText={setQuery}
             />
-
             {/* Suche starten */}
             <View style={styles.searchButtonContainer}>
                 <Button title="Search" onPress={searchBooks} color={colors.salmon}/>

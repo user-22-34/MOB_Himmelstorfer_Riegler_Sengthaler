@@ -2,6 +2,7 @@ import {View, Text, StyleSheet, Image} from "react-native";
 import {colors} from "../colors";
 
 export default function IndexScreen() {
+    // Visuelle Darstellung des HomeScreens
     return (
         <View style={styles.screenContainer}>
             <Image
@@ -20,27 +21,16 @@ export default function IndexScreen() {
                         books to look out for the next time you go book shopping!
                     </Text>
                     <Text style={styles.normalText}>
-                        You can also scan the IBSN of your own books with BookScan to keep
+                        You can also scan the ISBN of your own books with BookScan to keep
                         an overview of which books you've already got! Just use the scanner and track
                         your owned books - now you'll never buy the same book twice.
                     </Text>
                 </View>
             </View>
         </View>
-        /*
-        <Redirect href="/search"/>
-         */
     );
 }
-/*
-export default function HomePage(){
-    return (
-        <View style={styles.container}>
-            <Text>index tsx - klappts??</Text>
-        </View>
-    )
-}
-*/
+
 const styles = StyleSheet.create({
     screenContainer:{
         backgroundColor: colors.offwhite,

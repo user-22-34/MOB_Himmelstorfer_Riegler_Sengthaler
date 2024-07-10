@@ -6,14 +6,20 @@ import { FIRESTORE_DB } from '../config/FirebaseConfig';
 import {addDoc, collection} from "firebase/firestore";
 
 export default function BookDetails({ route }) {
+    // Buch aus gegebenen Daten erstellen (alle Daten werden übergeben)
     const { book } = route.params;
-
+    // Variablen/Konstanten definieren
     const [bookDesc, setBookDesc] = useState(null);
     const [loading, setLoading] = useState(true);
     const [notSaved, setNotSaved] = useState(false); // State to track if book is saved
     const [docId, setDocId] = useState(null); // State to store the document ID
 
-
+    // Fetchen der Buchbeschreibung
+    // (In der Open Library API Abfrage aus search.tsx fehlt die Beschreibung
+    //  -> diese wird hier mit einer anderen Abfragen-Art an Open Library API
+    //  gefetcht. BookDesc ist also ein Objekt das weit mehr als nur die Buch-
+    //  Beschreibung enthält, aber wir brauchen nur die Beschreibung weil wir
+    //  den Rest aus den mitgegebenen Parametern haben.)
     useEffect(() => {
         const fetchBookDesc = async () => {
             try {
@@ -23,57 +29,36 @@ export default function BookDetails({ route }) {
             } catch (error) {
                 console.error(error);
             } finally {
-                setLoading(false);
+                setLoading(false); // Speicher-Stand updaten
             }
         };
-
         fetchBookDesc();
     }, [book.key]);
 
-/*
+    // Kontrollieren, ob Buch das in Detailansicht geöffnet ist, bereits in
+    // Datenbank vorhanden ist
     useEffect(() => {
         const checkIfSaved = async () => {
             try {
-                const q = query(collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks'), where("bookId", "==", book.key));
+                const q =
+                    query(collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks'),
+                        where("bookId", "==", book.key));
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
-                    setNotSaved(false); // Book is already saved
-                }
-                else{
-                    setNotSaved(true);
-                }
-            } catch (error) {
-                console.error("Error checking if book is saved: ", error);
-            }
-        };
-
-        checkIfSaved();
-    }, [book.key]);
-
- */
-
-    useEffect(() => {
-        const checkIfSaved = async () => {
-            try {
-                const q = query(collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks'), where("bookId", "==", book.key));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    setDocId(querySnapshot.docs[0].id); // Save the document ID
-                    setNotSaved(false); // Book is already saved
+                    setDocId(querySnapshot.docs[0].id); // document ID speichern
+                    setNotSaved(false); // Book bereits gespeichert
                 } else {
-                    setNotSaved(true);
+                    setNotSaved(true); // Buch noch nicht gespeichert
                 }
             } catch (error) {
-                console.error("Error checking if book is saved: ", error);
+                console.error("Error while checking if book is saved: ", error);
             }
         };
-
         checkIfSaved();
     }, [book.key]);
 
-    /*
+    // Funktion um Buch zu speichern und in Datenbank zu savedBooks hinzuzufügen
     const saveBook = async () => {
         const newBook = {
             bookId: book.key,
@@ -83,39 +68,13 @@ export default function BookDetails({ route }) {
             description: bookDesc?.description?.value || 'No description available',
             created: serverTimestamp()
         };
-        // Add `newBook` to Firestore
-        await addDoc(collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks'), newBook);
-        setNotSaved(false); // Update state to indicate book is saved
+        const docRef = await addDoc(
+            collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks'), newBook);
+        setDocId(docRef.id); // neue document ID speichern
+        setNotSaved(false); // Speicher-Status updaten / Buch gespeichert
     };
 
-     */
-
-    /*
-    const removeBook = async () => {
-        // Implement logic to remove the book from Firestore
-        // Example: Delete the document by its ID
-        await deleteDoc(doc(FIRESTORE_DB, 'users', 'markus', 'savedBooks', 'works', book.key));
-        //const fbDoc = doc(FIRESTORE_DB, `users/markus/savedBooks/${id}`);
-        //deleteDoc(fbDoc);
-        setNotSaved(true); // Update state to indicate book is removed
-    };
-
-     */
-
-    const saveBook = async () => {
-        const newBook = {
-            bookId: book.key,
-            title: book.title,
-            authors: book.author_name,
-            cover: book.cover_i ? `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg` : '',
-            description: bookDesc?.description?.value || 'No description available',
-            created: serverTimestamp()
-        };
-        const docRef = await addDoc(collection(FIRESTORE_DB, 'users', 'markus', 'savedBooks'), newBook);
-        setDocId(docRef.id); // Save the new document ID
-        setNotSaved(false); // Update state to indicate book is saved
-    };
-
+    // Funktion um Buch zu ent-speichern und in Datenbank von savedBooks zu löschen
     const removeBook = async () => {
         try {
             if (docId) {
@@ -128,10 +87,12 @@ export default function BookDetails({ route }) {
         }
     };
 
+    // Speicherstand der Kurzbeschreibung anzeigen durch Lade-Kreis
     if (loading) {
         return <ActivityIndicator size="large" color={colors.salmon} />;
     }
 
+    // Visuelle Ausgabe der Buchdetails
     return (
         <ScrollView style={styles.screenContainer}>
             <View style={styles.card}>
@@ -155,6 +116,7 @@ export default function BookDetails({ route }) {
                 <Text style={styles.description}>{bookDesc?.description?.value
                     || 'No description available'}</Text>
 
+                {/* Button um Buch zu speichern / zu ent-speichern */}
                 {!notSaved ? (
                     <TouchableOpacity style={styles.removeButton} onPress={removeBook}>
                         <Text style={styles.removeButtonText}>Remove Book</Text>

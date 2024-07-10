@@ -9,17 +9,16 @@ import { useRoute } from '@react-navigation/native';
 import { colors } from '../../colors';
 
 export default function BookPage() {
+  // Variablen/Konstanten definieren
   const route = useRoute();
   const { id } = route.params;
   const [book, setBook] = useState<any>(null);
   const navigation = useNavigation();
 
+  // Favorite-Herz in rechter oberer Ecke anzeigen
   useEffect(() => {
     if(!book) return;
     const favourite = book.favourite;
-
-
-
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={toggleFavourite}>
@@ -29,6 +28,7 @@ export default function BookPage() {
     });
   }, [book]);
 
+  // Aktuell gewähltes Buch aus Datenbank (books) laden
   useEffect(() => {
     if (!id) return;
     const load = async () => {
@@ -40,8 +40,7 @@ export default function BookPage() {
     load();
   }, [id]);
 
-
-
+  // Funktion um Favorite-Herz zu aktivieren / zu deaktivieren
   const toggleFavourite = () => {
     const isFavourite = book.favourite;
     const fbDoc = doc(FIRESTORE_DB, `users/markus/books/${id}`);
@@ -49,12 +48,14 @@ export default function BookPage() {
     setBook({ ...book, favourite: !isFavourite });
   };
 
+  // Funktion um eingescanntes Buch aus Datenbank löschen
   const removeBook = () => {
     const fbDoc = doc(FIRESTORE_DB, `users/markus/books/${id}`);
     deleteDoc(fbDoc);
     navigation.goBack();
   };
 
+  // Visuelle Darstellung der Buch-Details des gewählten eingescannten Buches
   return (
     <View style={styles.container}>
       <ScrollView>
