@@ -27,40 +27,30 @@ export default function BookDetails({ route }) {
     if (loading) {
         return <ActivityIndicator size="large" color={colors.salmon} />;
     }
-    /*
-    if (!bookDesc) {
-        return (
-            <View style={styles.container}>
-                <Text>Book description not found.</Text>
-            </View>
-        );
-    }
-
-     */
-
-
 
     return (
         <ScrollView style={styles.screenContainer}>
-            {book.cover_i ? (
-                <Image
-                    source={{ uri: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg` }}
-                    style={styles.cover}
-                />
-            ) : (
-                <Image
-                    source={require('../assets/images/noimagelogo.png')}
-                    style={styles.cover}
-                />
-            )}
-            <Text style={styles.title}>{book.title}</Text>
-            <Text style={styles.author}>{book.author_name && book.author_name.length > 0
-                ? book.author_name.join(', ')
-                : 'No author available'}</Text>
-            <Text style={styles.publishDate}>{book.first_publish_year
-                || 'No date available'}</Text>
-            <Text style={styles.description}>{bookDesc.description?.value
-                || 'No description available'}</Text>
+            <View style={styles.card}>
+                {book.cover_i ? (
+                    <Image
+                        source={{ uri: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg` }}
+                        style={styles.cover}
+                    />
+                ) : (
+                    <Image
+                        source={require('../assets/images/noimagelogo.png')}
+                        style={styles.cover}
+                    />
+                )}
+                <Text style={styles.title}>{book.title}</Text>
+                <Text style={styles.author}>{book.author_name && book.author_name.length > 0
+                    ? book.author_name.join(', ')
+                    : 'No author available'}</Text>
+                <Text style={styles.publishDate}>{book.first_publish_year
+                    || 'No date available'}</Text>
+                <Text style={styles.description}>{bookDesc.description?.value
+                    || 'No description available'}</Text>
+            </View>
         </ScrollView>
     );
 }
@@ -104,5 +94,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: colors.darkgreen,
         paddingBottom: 40,
+    },
+    card: {
+        flex: 1,
+        padding: 20,
+        marginHorizontal: 10,
+        marginBottom: 40,
+        backgroundColor: colors.purewhite,
+        borderRadius: 10,
+        elevation: 5
     },
 });

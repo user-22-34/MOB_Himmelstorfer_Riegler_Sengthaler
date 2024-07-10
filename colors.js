@@ -6,5 +6,6 @@ export const colors = {
     darkgreen: "#1D3124",
 
     midgreen: "#5f7a68",
-    purewhite: "#FFFFFF"
+    purewhite: "#FFFFFF",
+    heart: "#f50037",
 };

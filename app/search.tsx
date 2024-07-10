@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.lightgreen,
         marginTop: 10,
         borderRadius: 10,
+        elevation: 5,
     },
     title: {
         fontSize: 18,

@@ -98,17 +98,15 @@ export default function List() {
     return (
         <TouchableOpacity onPress={() => navigation.navigate('BookPage', { id: item.id })}>
           <View style={styles.bookItem}>
-            <Image source={{ uri: item.volumeInfo.imageLinks.thumbnail }} style={{ width: 50, height: 50 }} />
-            <View>
-              <Text>{item.volumeInfo.title}</Text>
-              <Text>{item.volumeInfo.authors[0]}</Text>
+            <Image source={{ uri: item.volumeInfo.imageLinks.thumbnail }} style={styles.cover} />
+            <View style={styles.bookInfo}>
+              <Text style={styles.title}>{item.volumeInfo.title}</Text>
+              <Text style={styles.author}>{item.volumeInfo.authors[0]}</Text>
             </View>
           </View>
         </TouchableOpacity>
     );
   };
-
-
 
 
   return (
@@ -130,9 +128,9 @@ export default function List() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    backgroundColor: '#fcf7ed'
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: colors.offwhite,
   },
   fab:  {
     position: 'absolute',
@@ -152,13 +150,26 @@ const styles = StyleSheet.create({
   },
   bookItem: {
     flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
+    padding: 10,
+    backgroundColor: colors.lightgreen,
     marginTop: 10,
-    marginLeft: 5,
-    backgroundColor: 'white',
-    padding: 5,
+    borderRadius: 10,
     elevation: 5,
-    borderRadius: 3
-  }
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  bookInfo: {
+    flex: 1,
+  },
+  author: {
+    fontSize: 16,
+    color: colors.midgreen,
+  },
+  cover: {
+    width: 50,
+    height: 75,
+    marginRight: 10,
+  },
 });
