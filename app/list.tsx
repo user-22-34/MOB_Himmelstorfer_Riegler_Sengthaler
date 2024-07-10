@@ -95,8 +95,14 @@ export default function List() {
         }
         <FlatList data={books} renderItem={renderItem} keyExtractor={(item) => item.id}/>
         {hasPermission &&
-            <TouchableOpacity style={styles.fab} onPress={() => setShowScanner(true)}>
-              <Text style={styles.fabIcon}>+</Text>
+            <TouchableOpacity style={styles.fab} onPress={() => {
+              if (showScanner) {
+                setShowScanner(false);
+              } else {
+                setShowScanner(true);
+              }
+            }}>
+              <Text style={styles.fabIcon}>{showScanner ? '×' : '+'}</Text>
             </TouchableOpacity>
         }
       </View>
@@ -120,7 +126,8 @@ const styles = StyleSheet.create({
     bottom: 20,
     backgroundColor: colors.salmon,
     borderRadius: 30,
-    elevation: 8
+    elevation: 8,
+    zIndex: 3,
   },
   trash: {
     width: 50,

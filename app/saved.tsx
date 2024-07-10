@@ -58,7 +58,8 @@ export default function LibraryScreen() {
 const styles = StyleSheet.create({
     screenContainer: {
         flex: 1,
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 8,
         backgroundColor: colors.offwhite,
     },
     bookItem: {
